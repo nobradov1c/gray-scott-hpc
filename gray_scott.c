@@ -1,10 +1,11 @@
-#include "img_util.h"
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <time.h>
+
+#include "img_util.h"
 
 #define U_V_SEED_FILE "u-v-seed.txt"
 #define PARAMS_FILE "params.txt"
