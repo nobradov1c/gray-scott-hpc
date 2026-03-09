@@ -10,6 +10,13 @@
 #define U_V_SEED_FILE "u-v-seed.txt"
 #define PARAMS_FILE "params.txt"
 
+int64_t unix_timestamp_ms() {
+  struct timespec ts;
+  if (clock_gettime(CLOCK_REALTIME, &ts) != 0)
+    return -1;
+  return (int64_t)ts.tv_sec * 1000LL + ts.tv_nsec / 1000000LL;
+}
+
 int get_index(int n, int i, int j) { return i * n + j; }
 void print_matrix(double *mat, int m, int n) {
   for (int i = 0; i < m; i++) {
@@ -146,8 +153,9 @@ int main(int argc, char **argv) {
   double *v_new = calloc(n * n, sizeof(double));
 
   //   save initial state
-  // write_png(outdir, 0, n, u, v);
+  write_png(outdir, 0, n, u, v);
 
+  int time_start = unix_timestamp_ms();
   // calculation, indexes with wrapping
   for (int step = 1; step <= steps; step++) {
     for (int i = 0; i < n; i++) {
@@ -206,14 +214,16 @@ int main(int argc, char **argv) {
     v = v_new;
     v_new = tmp;
 
-    if (step % snapshot_interval == 0) {
-      // write_png(outdir, step, n, u, v);
-    }
+    // if (step % snapshot_interval == 0) {
+    // write_png(outdir, step, n, u, v);
+    // }
   }
 
-  if (steps % snapshot_interval != 0) {
-    // write_png(outdir, steps, n, u, v);
-  }
+  int time_end = unix_timestamp_ms();
+  int total_time_ms = time_end - time_start;
+  printf("Calc took %i ms\n", total_time_ms);
+
+  write_png(outdir, steps, n, u, v);
 
   free(u);
   free(u_new);
